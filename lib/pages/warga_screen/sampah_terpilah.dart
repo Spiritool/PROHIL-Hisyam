@@ -83,7 +83,7 @@ class _SampahTerpilahState extends State<SampahTerpilah> {
   }
 
   Future<void> _fetchKecamatanData() async {
-    const String url = "https://jera.kerissumenep.com/api/kecamatan";
+    const String url = "http://192.168.1.10:8000/api/kecamatan";
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -106,7 +106,7 @@ class _SampahTerpilahState extends State<SampahTerpilah> {
 
       var response = await http.get(
           Uri.parse(
-              'https://jera.kerissumenep.com/api/alamat/get-by-user/$userId'),
+              'http://192.168.1.10:8000/api/alamat/get-by-user/$userId'),
           headers: {"Accept": "application/json"});
 
       if (response.statusCode == 200) {

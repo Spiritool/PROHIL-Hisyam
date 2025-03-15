@@ -20,6 +20,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
   String userName = 'Guest';
   String userEmail = 'user@example.com';
   String userPhone = '081234567890';
+  String userStatus = 'ready';
   final List<String> _addresses = ['Rumah', 'Kantor', 'Kos'];
   bool _isLoggedIn = false;
 
@@ -27,6 +28,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
   void initState() {
     super.initState();
     _loadUserData();
+    _loadUserStatus();
   }
 
   Future<void> _loadUserData() async {
@@ -35,6 +37,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
       userName = prefs.getString('user_name') ?? 'Guest';
       userEmail = prefs.getString('user_email') ?? 'user@example.com';
       userPhone = prefs.getString('user_phone') ?? '081234567890';
+      userStatus = prefs.getString('status') ?? 'ready';
       _addresses.addAll(prefs.getStringList('addresses') ?? []);
       _isLoggedIn = userName != 'Guest';
     });
@@ -62,7 +65,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
     );
   }
 
-  String _status = 'Ready'; // Default value
+  String _status = 'ready'; // Default value
 
   Widget _buildLoggedInContent() {
     return Column(
@@ -77,7 +80,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
               InfoField(label: 'No. HP', value: userPhone),
               _buildPasswordResetField(),
 
-              // ✅ Tambahkan Dropdown di sini
+              // ✅ Dropdown Status dengan API
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Card(
@@ -87,8 +90,8 @@ class _AkunPetugasState extends State<AkunPetugas> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Status:',
+                        Text(
+                          'Status: $userStatus',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -96,46 +99,53 @@ class _AkunPetugasState extends State<AkunPetugas> {
                         ),
                         const SizedBox(height: 5),
                         DropdownButtonFormField<String>(
-                          value: _status,
+                          value:
+                              _status, // ✅ Sekarang nilainya dari SharedPreferences
                           isExpanded: true,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  8), // ✅ Biar sudutnya lebih halus
+                              borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.black.withOpacity(
-                                    0.2), // ✅ Warna hitam dengan 20% transparansi
-                                width: 1, // ✅ Ketebalan border
+                                color: Colors.black.withOpacity(0.2),
+                                width: 1,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.black.withOpacity(
-                                    0.2), // ✅ Warna lebih pudar saat tidak fokus
+                                color: Colors.black.withOpacity(0.2),
                                 width: 1,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.black.withOpacity(
-                                    0.3), // ✅ Warna lebih jelas saat fokus
+                                color: Colors.black.withOpacity(0.3),
                                 width: 1.5,
                               ),
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 15),
                           ),
-                          items: ['Ready', 'Tidak Ready'].map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            if (newValue != null) {
-                              _status = newValue;
+                          items: [
+                            DropdownMenuItem(
+                                value: 'ready', child: Text('Ready')),
+                            DropdownMenuItem(
+                                value: 'tidak ready',
+                                child: Text('Tidak Ready')),
+                          ],
+                          onChanged: (newValue) async {
+                            if (newValue != null && newValue != _status) {
+                              setState(() {
+                                _status = newValue;
+                              });
+
+                              // ✅ Simpan status ke SharedPreferences agar tetap tersimpan
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setString('user_status', newValue);
+
+                              _updateUserStatus(newValue); // 🔥 Panggil API
                             }
                           },
                         ),
@@ -357,7 +367,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
 
                 // Prepare the API request
                 final String apiUrl =
-                    'http://192.168.58.122:8000/api/user/update/$idUser?_method=PUT';
+                    'http://192.168.1.10:8000/api/user/update/$idUser?_method=PUT';
                 final String? token = prefs.getString('token');
 
                 final Map<String, String> headers = {
@@ -432,7 +442,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
     }
 
     final url = Uri.parse(
-        'http://192.168.58.122:8000/api/user/update/$userId?_method=PUT');
+        'http://192.168.1.10:8000/api/user/update/$userId?_method=PUT');
     final response = await http.put(
       url,
       headers: {
@@ -480,4 +490,55 @@ class _AkunPetugasState extends State<AkunPetugas> {
       MaterialPageRoute(builder: (context) => const Login()),
     );
   }
+
+  Future<void> _updateUserStatus(String status) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    final token = prefs.getString('token');
+
+    if (userId == null || token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal mendapatkan data pengguna.')),
+      );
+      return;
+    }
+
+    final requestBody = jsonEncode({'status': status});
+    print('Status yang dikirim: $status'); // ✅ Debugging
+    print('Body JSON yang dikirim: $requestBody');
+
+    final url = Uri.parse(
+        'http://192.168.1.10:8000/api/user/$userId/status?_method=PUT');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        userStatus = status;
+      });
+      await prefs.setString('status', status); // ✅ Simpan status terbaru
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Status berhasil diperbarui!')),
+      );
+    } else {
+      print('Gagal memperbarui status. Response: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memperbarui status: ${response.body}')),
+      );
+    }
+  }
+
+  Future<void> _loadUserStatus() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  setState(() {
+    _status = prefs.getString('user_status') ?? 'ready'; // ✅ Ambil status terbaru
+  });
+}
+
 }

@@ -36,7 +36,7 @@ class _LoginState extends State<Login> {
     }
 
     final response = await http.post(
-      Uri.parse('http://192.168.58.122:8000/api/login'),
+      Uri.parse('http://192.168.1.10:8000/api/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -59,7 +59,9 @@ class _LoginState extends State<Login> {
       await prefs.setString('user_email', user['email']);
       await prefs.setString('user_phone', user['no_hp']);
       await prefs.setString('user_role', user['role']);
+      prefs.setString('status', user['status'] ?? 'ready');
       await prefs.setString('user_profile_photo', user['foto_profile'] ?? '');
+      
 
       if (user['role'] == 'warga') {
         ScaffoldMessenger.of(context).showSnackBar(

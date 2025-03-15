@@ -21,7 +21,7 @@ class HomeKonten extends StatefulWidget {
 
 Future<List<dynamic>> fetchBerita() async {
   final response =
-      await http.get(Uri.parse('http://192.168.58.122:8000/api/berita'));
+      await http.get(Uri.parse('http://192.168.1.10:8000/api/berita'));
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
     if (data['success']) {
@@ -48,7 +48,7 @@ class _HomeKontenState extends State<HomeKonten> {
 
   Future<List<String>> fetchSettings() async {
     const String url =
-        "http://192.168.58.122:8000/api/setting"; // Update with your API endpoint
+        "http://192.168.1.10:8000/api/setting"; // Update with your API endpoint
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -255,7 +255,7 @@ class _HomeKontenState extends State<HomeKonten> {
                   itemBuilder: (context, index) {
                     final berita = beritaList[index];
                     final gambarUrl =
-                        'http://192.168.58.122:8000/storage/gambar-berita/${berita['gambar_konten'][0]['nama']}';
+                        'http://192.168.1.10:8000/storage/gambar-berita/${berita['gambar_konten'][0]['nama']}';
 
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 8),
