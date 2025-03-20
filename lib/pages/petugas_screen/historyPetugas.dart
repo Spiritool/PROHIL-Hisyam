@@ -15,8 +15,8 @@ Future<List<SampahData>> fetchSampahData() async {
   }
 
   final urls = [
-    'http://192.168.1.5:8000/api/pengangkutan-sampah/history/by-petugas/$userId/done',
-    'http://192.168.1.5:8000/api/pengangkutan-sampah/history/by-petugas/$userId/failed',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah/history/by-petugas/$userId/done',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah/history/by-petugas/$userId/failed',
   ];
   List<SampahData> allData = [];
 
@@ -45,8 +45,8 @@ Future<List<SampahLiarData>> fetchSampahLiarData() async {
   }
 
   final urls = [
-    'http://192.168.1.5:8000/api/pengangkutan-sampah-liar/history/by-petugas/$userId/done',
-    'http://192.168.1.5:8000/api/pengangkutan-sampah-liar/history/by-petugas/$userId/failed',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/history/by-petugas/$userId/done',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/history/by-petugas/$userId/failed',
   ];
 
   List<SampahLiarData> allData = [];

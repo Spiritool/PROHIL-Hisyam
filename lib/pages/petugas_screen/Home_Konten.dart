@@ -19,8 +19,8 @@ Future<List<SampahData>> fetchSampahData() async {
   }
 
   final urls = [
-    'http://192.168.1.10:8000/api/pengangkutan-sampah/history/by-petugas/$userId/pending',
-    'http://192.168.1.10:8000/api/pengangkutan-sampah/history/by-petugas/$userId/proses',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah/history/by-petugas/$userId/pending',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah/history/by-petugas/$userId/proses',
   ];
 
   List<SampahData> allData = [];
@@ -50,8 +50,8 @@ Future<List<SampahLiarData>> fetchSampahLiarData() async {
   }
 
   final urls = [
-    'http://192.168.1.10:8000/api/pengangkutan-sampah-liar/history/by-petugas/$userId/pending',
-    'http://192.168.1.10:8000/api/pengangkutan-sampah-liar/history/by-petugas/$userId/proses',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/history/by-petugas/$userId/pending',
+    'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/history/by-petugas/$userId/proses',
   ];
 
   List<SampahLiarData> allData = [];
@@ -80,7 +80,7 @@ Future<void> updateStatus(
   final String? token = prefs.getString('token');
 
   final String apiUrl =
-      'http://192.168.1.10:8000/api/pengangkutan-sampah/proses/$idSampah';
+      'https://jera.kerissumenep.com/api/pengangkutan-sampah/proses/$idSampah';
 
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ Future<void> updateStatusSampahLiar(
   final String? token = prefs.getString('token');
 
   final String apiUrl =
-      'http://192.168.1.10:8000/api/pengangkutan-sampah-liar/proses/$idSampah';
+      'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/proses/$idSampah';
 
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ Future<void> updateStatusFailed(int idSampah, int idUserPetugas) async {
   final String? token = prefs.getString('token');
 
   final String apiUrl =
-      'http://192.168.1.10:8000/api/pengangkutan-sampah/failed/$idSampah';
+      'https://jera.kerissumenep.com/api/pengangkutan-sampah/failed/$idSampah';
 
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ Future<void> updateStatusFailedSampahLiar(
   final String? token = prefs.getString('token');
 
   final String apiUrl =
-      'http://192.168.1.10:8000/api/pengangkutan-sampah-liar/failed/$idSampah';
+      'https://jera.kerissumenep.com/api/pengangkutan-sampah-liar/failed/$idSampah';
 
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -749,7 +749,7 @@ class _HomeKontenPetugasState extends State<HomeKontenPetugas> {
             const SizedBox(height: 8),
             if (fotoSampah.isNotEmpty)
               Image.network(
-                'http://192.168.1.10:8000/storage/foto-sampah/$fotoSampah',
+                'https://jera.kerissumenep.com/storage/foto-sampah/$fotoSampah',
                 errorBuilder: (context, error, stackTrace) {
                   return const Text('Gambar tidak dapat ditampilkan');
                 },
@@ -943,7 +943,7 @@ class _HomeKontenPetugasState extends State<HomeKontenPetugas> {
             const SizedBox(height: 8),
             if (fotoSampah.isNotEmpty)
               Image.network(
-                'http://192.168.1.10:8000/storage/foto-sampah/$fotoSampah',
+                'https://jera.kerissumenep.com/storage/foto-sampah/$fotoSampah',
                 errorBuilder: (context, error, stackTrace) {
                   return const Text('Gambar tidak dapat ditampilkan');
                 },

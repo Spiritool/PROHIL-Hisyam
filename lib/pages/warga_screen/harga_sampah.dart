@@ -11,10 +11,10 @@ class HargaSampah extends StatefulWidget {
 }
 
 class _HargaSampahState extends State<HargaSampah> {
-  final String baseUrl = 'https://jera.kerissumenep.com';
+  final String baseUrl = 'https://jera.kerissumenep.com/api';
 
   Future<List<dynamic>> fetchHargaSampah() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/harga-barang'));
+    final response = await http.get(Uri.parse('$baseUrl/harga-barang'));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -82,13 +82,14 @@ class _HargaSampahState extends State<HargaSampah> {
                 final namaBarang = item['Nama_Barang'] ?? 'Tidak tersedia';
                 final hargaBeli = item['Harga_Beli'] ?? '0';
                 final timestamp = item['updated_at'];
-                String gambarUrl = item['gambar'] ?? '';
+                String gambarLink = item['gambar'] ?? '';
 
-                if (gambarUrl.isNotEmpty) {
-                  gambarUrl = '$baseUrl$gambarUrl'.replaceAll(r'\', '');
+                if (gambarLink.isNotEmpty) {
+                  gambarLink = '$baseUrl$gambarLink'.replaceAll(r'\', '');
                 } else {
-                  gambarUrl = '';
+                  gambarLink = '';
                 }
+                print('gambar: $gambarLink');
 
                 return Card(
                   shape: RoundedRectangleBorder(
@@ -103,7 +104,7 @@ class _HargaSampahState extends State<HargaSampah> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.network(
-                              gambarUrl,
+                              gambarLink,
                               width: double.infinity,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {

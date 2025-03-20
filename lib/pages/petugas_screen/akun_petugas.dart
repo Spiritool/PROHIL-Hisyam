@@ -90,64 +90,46 @@ class _AkunPetugasState extends State<AkunPetugas> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Status: $userStatus',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        // Text(
+                        //   'Status: $userStatus',
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
                         const SizedBox(height: 5),
-                        DropdownButtonFormField<String>(
-                          value:
-                              _status, // ✅ Sekarang nilainya dari SharedPreferences
-                          isExpanded: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.2),
-                                width: 1,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Status: ${_status == "ready" ? "Ready" : "Tidak Ready"}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.2),
-                                width: 1,
-                              ),
+                            Switch(
+                              value: _status ==
+                                  "ready", // Jika "ready", maka switch aktif (ON)
+                              onChanged: (bool newValue) async {
+                                String newStatus =
+                                    newValue ? "ready" : "tidak ready";
+
+                                setState(() {
+                                  _status = newStatus;
+                                });
+
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setString('user_status', newStatus);
+
+                                _updateUserStatus(
+                                    newStatus); // 🔥 Panggil API untuk update status
+                              },
+                              activeColor: Colors.green, // Warna saat ON
+                              inactiveThumbColor: Colors.red, // Warna saat OFF
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.3),
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 15),
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                                value: 'ready', child: Text('Ready')),
-                            DropdownMenuItem(
-                                value: 'tidak ready',
-                                child: Text('Tidak Ready')),
                           ],
-                          onChanged: (newValue) async {
-                            if (newValue != null && newValue != _status) {
-                              setState(() {
-                                _status = newValue;
-                              });
-
-                              // ✅ Simpan status ke SharedPreferences agar tetap tersimpan
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              await prefs.setString('user_status', newValue);
-
-                              _updateUserStatus(newValue); // 🔥 Panggil API
-                            }
-                          },
                         ),
                       ],
                     ),
@@ -367,7 +349,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
 
                 // Prepare the API request
                 final String apiUrl =
-                    'http://192.168.1.10:8000/api/user/update/$idUser?_method=PUT';
+                    'https://jera.kerissumenep.com/api/user/update/$idUser?_method=PUT';
                 final String? token = prefs.getString('token');
 
                 final Map<String, String> headers = {
@@ -442,7 +424,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
     }
 
     final url = Uri.parse(
-        'http://192.168.1.10:8000/api/user/update/$userId?_method=PUT');
+        'https://jera.kerissumenep.com/api/user/update/$userId?_method=PUT');
     final response = await http.put(
       url,
       headers: {
@@ -508,7 +490,7 @@ class _AkunPetugasState extends State<AkunPetugas> {
     print('Body JSON yang dikirim: $requestBody');
 
     final url = Uri.parse(
-        'http://192.168.1.10:8000/api/user/$userId/status?_method=PUT');
+        'https://jera.kerissumenep.com/api/user/$userId/status?_method=PUT');
     final response = await http.put(
       url,
       headers: {
@@ -535,10 +517,10 @@ class _AkunPetugasState extends State<AkunPetugas> {
   }
 
   Future<void> _loadUserStatus() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  setState(() {
-    _status = prefs.getString('user_status') ?? 'ready'; // ✅ Ambil status terbaru
-  });
-}
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _status =
+          prefs.getString('user_status') ?? 'ready'; // ✅ Ambil status terbaru
+    });
+  }
 }
